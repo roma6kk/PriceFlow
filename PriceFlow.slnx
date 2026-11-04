@@ -2,4 +2,7 @@
   <Folder Name="/src/">
     <Project Path="src/PriceFlow.Domain/PriceFlow.Domain.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/PriceFlow.UnitTests/PriceFlow.UnitTests.csproj" />
+  </Folder>
 </Solution>
