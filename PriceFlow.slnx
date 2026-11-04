@@ -1,5 +1,6 @@
 <Solution>
   <Folder Name="/src/">
+    <Project Path="src/PriceFlow.Application/PriceFlow.Application.csproj" />
     <Project Path="src/PriceFlow.Domain/PriceFlow.Domain.csproj" />
   </Folder>
   <Folder Name="/tests/">
