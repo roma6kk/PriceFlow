@@ -17,3 +17,7 @@ csharp_style_var_for_built_in_types = true:suggestion
 csharp_style_var_when_type_is_apparent = true:suggestion
 dotnet_sort_system_directives_first = true
 dotnet_style_qualification_for_field = false:warning
+
+# EF Core migrations are generated, do not lint them.
+[**/Migrations/*.cs]
+generated_code = true
