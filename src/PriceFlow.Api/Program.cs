@@ -1,3 +1,4 @@
+using PriceFlow.Api.Infrastructure;
 using PriceFlow.Application;
 using PriceFlow.Infrastructure;
 using PriceFlow.Infrastructure.Persistence;
@@ -11,10 +12,14 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
+
 var app = builder.Build();
 
 await app.Services.InitializeDatabaseAsync();
 
+app.UseExceptionHandler();
 app.UseSwagger();
 app.UseSwaggerUI();
 
