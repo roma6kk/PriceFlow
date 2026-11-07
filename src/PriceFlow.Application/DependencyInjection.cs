@@ -1,4 +1,6 @@
+using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
+using PriceFlow.Application.Common.Behaviors;
 
 namespace PriceFlow.Application;
 
@@ -11,7 +13,9 @@ public static class DependencyInjection
         services.AddMediatR(cfg =>
         {
             cfg.RegisterServicesFromAssembly(assembly);
+            cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
         });
+        services.AddValidatorsFromAssembly(assembly);
         services.AddSingleton(TimeProvider.System);
 
         return services;
