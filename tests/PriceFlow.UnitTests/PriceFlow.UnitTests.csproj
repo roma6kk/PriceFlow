@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\PriceFlow.Domain\PriceFlow.Domain.csproj" />
+    <ProjectReference Include="..\..\src\PriceFlow.Application\PriceFlow.Application.csproj" />
   </ItemGroup>
 
   <ItemGroup>
