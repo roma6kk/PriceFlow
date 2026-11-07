@@ -2,6 +2,7 @@
   <Folder Name="/src/">
     <Project Path="src/PriceFlow.Api/PriceFlow.Api.csproj" />
     <Project Path="src/PriceFlow.Application/PriceFlow.Application.csproj" />
+    <Project Path="src/PriceFlow.CompetitorService/PriceFlow.CompetitorService.csproj" />
     <Project Path="src/PriceFlow.Contracts/PriceFlow.Contracts.csproj" />
     <Project Path="src/PriceFlow.Domain/PriceFlow.Domain.csproj" />
     <Project Path="src/PriceFlow.Infrastructure/PriceFlow.Infrastructure.csproj" />
