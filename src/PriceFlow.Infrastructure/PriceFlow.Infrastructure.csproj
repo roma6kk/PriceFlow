@@ -2,11 +2,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PriceFlow.Application\PriceFlow.Application.csproj" />
+    <ProjectReference Include="..\PriceFlow.Contracts\PriceFlow.Contracts.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
     <PackageReference Include="EFCore.NamingConventions" />
+    <PackageReference Include="Grpc.Net.ClientFactory" />
   </ItemGroup>
 
 </Project>

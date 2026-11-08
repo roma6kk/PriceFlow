@@ -2,6 +2,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using PriceFlow.Application.Products;
 using PriceFlow.Application.Products.Commands.CreateProduct;
+using PriceFlow.Application.Products.Commands.RepriceProduct;
 using PriceFlow.Application.Products.Queries.GetProductById;
 using PriceFlow.Application.Products.Queries.GetProducts;
 
@@ -25,4 +26,9 @@ public class ProductsController(ISender sender) : ControllerBase
         var id = await sender.Send(command, ct);
         return CreatedAtAction(nameof(GetById), new { id }, new { id });
     }
+
+    /// <summary>Asks the competitor service for a fresh price and reprices the product right now.</summary>
+    [HttpPost("{id:guid}/reprice")]
+    public Task<RepriceResult> Reprice(Guid id, CancellationToken ct) =>
+        sender.Send(new RepriceProductCommand(id), ct);
 }
