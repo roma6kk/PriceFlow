@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using PriceFlow.Application.Products;
+using PriceFlow.Application.Products.Commands.ChangeProductCost;
 using PriceFlow.Application.Products.Commands.CreateProduct;
 using PriceFlow.Application.Products.Commands.RepriceProduct;
 using PriceFlow.Application.Products.Queries.GetPriceHistory;
@@ -28,6 +29,13 @@ public class ProductsController(ISender sender) : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id }, new { id });
     }
 
+    [HttpPut("{id:guid}/cost")]
+    public async Task<IActionResult> ChangeCost(Guid id, ChangeCostRequest request, CancellationToken ct)
+    {
+        await sender.Send(new ChangeProductCostCommand(id, request.Cost, request.MinMarginPercent), ct);
+        return NoContent();
+    }
+
     /// <summary>Asks the competitor service for a fresh price and reprices the product right now.</summary>
     [HttpPost("{id:guid}/reprice")]
     public Task<RepriceResult> Reprice(Guid id, CancellationToken ct) =>
@@ -37,3 +45,5 @@ public class ProductsController(ISender sender) : ControllerBase
     public Task<IReadOnlyList<PriceChangeDto>> GetPriceHistory(Guid id, CancellationToken ct, [FromQuery] int take = 50) =>
         sender.Send(new GetPriceHistoryQuery(id, take), ct);
 }
+
+public record ChangeCostRequest(decimal Cost, decimal MinMarginPercent);
