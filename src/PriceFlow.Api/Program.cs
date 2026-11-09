@@ -1,4 +1,5 @@
 using PriceFlow.Api.Infrastructure;
+using PriceFlow.Api.Workers;
 using PriceFlow.Application;
 using PriceFlow.Infrastructure;
 using PriceFlow.Infrastructure.Persistence;
@@ -14,6 +15,9 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
+
+builder.Services.Configure<RepricingOptions>(builder.Configuration.GetSection(RepricingOptions.Section));
+builder.Services.AddHostedService<RepricingWorker>();
 
 var app = builder.Build();
 
