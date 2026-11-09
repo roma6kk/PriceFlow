@@ -18,6 +18,16 @@ public class CompetitorPricesService(PriceSimulator simulator, TimeProvider time
         return Task.FromResult(ToReply(request.Sku, price));
     }
 
+    public override async Task GetPrices(GetPricesRequest request,
+        IServerStreamWriter<PriceReply> responseStream, ServerCallContext context)
+    {
+        foreach (var sku in request.Skus)
+        {
+            if (simulator.GetPrice(sku) is { } price)
+                await responseStream.WriteAsync(ToReply(sku, price), context.CancellationToken);
+        }
+    }
+
     private PriceReply ToReply(string sku, decimal price) => new()
     {
         Sku = sku,
