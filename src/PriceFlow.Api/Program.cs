@@ -21,7 +21,7 @@ builder.Services.AddHostedService<RepricingWorker>();
 
 var app = builder.Build();
 
-await app.Services.InitializeDatabaseAsync();
+await app.Services.InitializeDatabaseAsync(seedDemoData: app.Environment.IsDevelopment());
 
 app.UseExceptionHandler();
 app.UseSwagger();
