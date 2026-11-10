@@ -27,4 +27,15 @@ public class PriceCalculatorTests
 
         Assert.Equal(125m, price);
     }
+
+    [Theory]
+    [InlineData(250.50, 248.00)]   // 247.995 -> 248.00
+    [InlineData(199.99, 197.99)]   // 197.9901 -> 197.99
+    [InlineData(101.50, 100.49)]   // 100.485 -> 100.49, banker's rounding would give 100.48
+    public void Rounds_to_kopecks_away_from_zero(decimal competitorPrice, decimal expected)
+    {
+        var price = PriceCalculator.Calculate(cost: 10m, minMarginPercent: 0m, competitorPrice);
+
+        Assert.Equal(expected, price);
+    }
 }

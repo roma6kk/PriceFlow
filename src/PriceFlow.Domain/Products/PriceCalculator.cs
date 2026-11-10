@@ -21,5 +21,7 @@ public static class PriceCalculator
         return Math.Max(target, floor);
     }
 
-    private static decimal Round(decimal value) => Math.Round(value, 2);
+    // Math.Round uses banker's rounding by default, which is not what you expect for money.
+    private static decimal Round(decimal value) =>
+        Math.Round(value, 2, MidpointRounding.AwayFromZero);
 }
