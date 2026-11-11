@@ -1,5 +1,6 @@
 using MediatR;
 using PriceFlow.Application.Common.Interfaces;
+using PriceFlow.Application.Products.Events;
 
 namespace PriceFlow.Application.Products.Commands.RepriceAllProducts;
 
@@ -10,6 +11,7 @@ public class RepriceAllProductsCommandHandler(
     IProductRepository products,
     ICompetitorPriceClient competitor,
     IUnitOfWork unitOfWork,
+    IPublisher publisher,
     TimeProvider time) : IRequestHandler<RepriceAllProductsCommand, int>
 {
     public async Task<int> Handle(RepriceAllProductsCommand command, CancellationToken ct)
@@ -19,7 +21,7 @@ public class RepriceAllProductsCommandHandler(
             return 0;
 
         var now = time.GetUtcNow().UtcDateTime;
-        var changed = 0;
+        var notifications = new List<PriceChangedNotification>();
 
         // Quotes arrive one by one over a gRPC server stream.
         await foreach (var quote in competitor.GetPricesAsync(bySku.Keys, ct))
@@ -32,10 +34,14 @@ public class RepriceAllProductsCommandHandler(
                 continue;
 
             products.AddPriceChange(change);
-            changed++;
+            notifications.Add(PriceChangedNotification.From(product, change));
         }
 
         await unitOfWork.SaveChangesAsync(ct);
-        return changed;
+
+        foreach (var notification in notifications)
+            await publisher.Publish(notification, ct);
+
+        return notifications.Count;
     }
 }

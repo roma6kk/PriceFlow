@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using PriceFlow.Application.Common.Interfaces;
 using PriceFlow.Contracts.Grpc;
 using PriceFlow.Infrastructure.Competitors;
+using PriceFlow.Infrastructure.Messaging;
 using PriceFlow.Infrastructure.Persistence;
 
 namespace PriceFlow.Infrastructure;
@@ -21,6 +22,9 @@ public static class DependencyInjection
         services.AddGrpcClient<CompetitorPrices.CompetitorPricesClient>(options =>
             options.Address = new Uri(configuration["CompetitorService:Url"]!));
         services.AddScoped<ICompetitorPriceClient, CompetitorPriceGrpcClient>();
+
+        services.Configure<KafkaOptions>(configuration.GetSection(KafkaOptions.Section));
+        services.AddSingleton<IPriceEventPublisher, KafkaPriceEventPublisher>();
 
         return services;
     }

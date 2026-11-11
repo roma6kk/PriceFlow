@@ -2,6 +2,7 @@ using FluentValidation;
 using MediatR;
 using PriceFlow.Application.Common.Exceptions;
 using PriceFlow.Application.Common.Interfaces;
+using PriceFlow.Application.Products.Events;
 using PriceFlow.Domain.Products;
 
 namespace PriceFlow.Application.Products.Commands.ChangeProductCost;
@@ -20,6 +21,7 @@ public class ChangeProductCostCommandValidator : AbstractValidator<ChangeProduct
 public class ChangeProductCostCommandHandler(
     IProductRepository products,
     IUnitOfWork unitOfWork,
+    IPublisher publisher,
     TimeProvider time) : IRequestHandler<ChangeProductCostCommand>
 {
     public async Task Handle(ChangeProductCostCommand command, CancellationToken ct)
@@ -32,5 +34,8 @@ public class ChangeProductCostCommandHandler(
             products.AddPriceChange(change);
 
         await unitOfWork.SaveChangesAsync(ct);
+
+        if (change is not null)
+            await publisher.Publish(PriceChangedNotification.From(product, change), ct);
     }
 }

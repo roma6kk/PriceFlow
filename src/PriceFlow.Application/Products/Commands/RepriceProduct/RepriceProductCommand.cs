@@ -1,6 +1,7 @@
 using MediatR;
 using PriceFlow.Application.Common.Exceptions;
 using PriceFlow.Application.Common.Interfaces;
+using PriceFlow.Application.Products.Events;
 using PriceFlow.Domain.Products;
 
 namespace PriceFlow.Application.Products.Commands.RepriceProduct;
@@ -13,6 +14,7 @@ public class RepriceProductCommandHandler(
     IProductRepository products,
     ICompetitorPriceClient competitor,
     IUnitOfWork unitOfWork,
+    IPublisher publisher,
     TimeProvider time) : IRequestHandler<RepriceProductCommand, RepriceResult>
 {
     public async Task<RepriceResult> Handle(RepriceProductCommand command, CancellationToken ct)
@@ -29,6 +31,10 @@ public class RepriceProductCommandHandler(
             products.AddPriceChange(change);
 
         await unitOfWork.SaveChangesAsync(ct);
+
+        // Publish only after the commit, so nobody hears about a price that was rolled back.
+        if (change is not null)
+            await publisher.Publish(PriceChangedNotification.From(product, change), ct);
 
         return new RepriceResult(change is not null, product.Price, product.CompetitorPrice);
     }
