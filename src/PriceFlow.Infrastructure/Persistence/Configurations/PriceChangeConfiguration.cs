@@ -20,5 +20,8 @@ public class PriceChangeConfiguration : IEntityTypeConfiguration<PriceChange>
             .WithMany()
             .HasForeignKey(c => c.ProductId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        // History is always read as "latest changes of one product".
+        builder.HasIndex(c => new { c.ProductId, c.ChangedAt });
     }
 }

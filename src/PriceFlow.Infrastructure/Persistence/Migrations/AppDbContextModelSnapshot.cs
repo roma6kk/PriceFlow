@@ -61,8 +61,8 @@ namespace PriceFlow.Infrastructure.Persistence.Migrations
                     b.HasKey("Id")
                         .HasName("pk_price_changes");
 
-                    b.HasIndex("ProductId")
-                        .HasDatabaseName("ix_price_changes_product_id");
+                    b.HasIndex("ProductId", "ChangedAt")
+                        .HasDatabaseName("ix_price_changes_product_id_changed_at");
 
                     b.ToTable("price_changes", (string)null);
                 });
