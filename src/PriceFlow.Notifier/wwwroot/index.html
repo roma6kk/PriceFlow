@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PriceFlow — live prices</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 860px; margin: 40px auto; padding: 0 16px; color: #1f2933; }
+    h1 { font-size: 22px; margin-bottom: 4px; }
+    #status { font-size: 14px; color: #7b8794; margin-bottom: 24px; }
+    #status.online { color: #1f9d55; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid #e4e7eb; }
+    th { font-size: 12px; text-transform: uppercase; color: #7b8794; }
+    td.num { text-align: right; font-variant-numeric: tabular-nums; }
+    .up { color: #cc1f1a; }
+    .down { color: #1f9d55; }
+    tr.flash { animation: flash 1.2s ease-out; }
+    @keyframes flash { from { background: #fff3c4; } to { background: transparent; } }
+    #empty { color: #7b8794; padding: 24px 12px; }
+  </style>
+</head>
+<body>
+  <h1>Live prices</h1>
+  <div id="status">connecting…</div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>SKU</th><th>Product</th><th class="num">Competitor</th>
+        <th class="num">Our price</th><th class="num">Change</th><th>Updated</th>
+      </tr>
+    </thead>
+    <tbody id="rows"></tbody>
+  </table>
+  <div id="empty">Waiting for the first price change…</div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.7/signalr.min.js"></script>
+  <script>
+    const rows = document.getElementById('rows');
+    const status = document.getElementById('status');
+    const money = value => value == null ? '—' : value.toFixed(2) + ' ₽';
+
+    const connection = new signalR.HubConnectionBuilder()
+      .withUrl('/hubs/prices')
+      .withAutomaticReconnect()
+      .build();
+
+    connection.on('PriceChanged', e => {
+      document.getElementById('empty').hidden = true;
+
+      let row = document.getElementById(e.sku);
+      if (!row) {
+        row = rows.insertRow();
+        row.id = e.sku;
+      }
+
+      const diff = e.newPrice - e.oldPrice;
+      row.innerHTML = `
+        <td>${e.sku}</td>
+        <td>${e.name}</td>
+        <td class="num">${money(e.competitorPrice)}</td>
+        <td class="num"><b>${money(e.newPrice)}</b></td>
+        <td class="num ${diff > 0 ? 'up' : 'down'}">${diff > 0 ? '+' : ''}${diff.toFixed(2)}</td>
+        <td>${new Date(e.changedAt).toLocaleTimeString()}</td>`;
+
+      row.classList.remove('flash');
+      void row.offsetWidth; // restart the animation
+      row.classList.add('flash');
+    });
+
+    const setStatus = (text, online) => {
+      status.textContent = text;
+      status.className = online ? 'online' : '';
+    };
+
+    connection.onreconnecting(() => setStatus('reconnecting…', false));
+    connection.onreconnected(() => setStatus('online', true));
+    connection.onclose(() => setStatus('offline', false));
+
+    connection.start()
+      .then(() => connection.invoke('SubscribeAll'))
+      .then(() => setStatus('online', true))
+      .catch(() => setStatus('offline', false));
+  </script>
+</body>
+</html>
