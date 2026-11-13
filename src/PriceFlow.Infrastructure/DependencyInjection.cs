@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PriceFlow.Application.Common.Interfaces;
 using PriceFlow.Contracts.Grpc;
+using PriceFlow.Infrastructure.Caching;
 using PriceFlow.Infrastructure.Competitors;
 using PriceFlow.Infrastructure.Messaging;
 using PriceFlow.Infrastructure.Persistence;
@@ -25,6 +26,13 @@ public static class DependencyInjection
 
         services.Configure<KafkaOptions>(configuration.GetSection(KafkaOptions.Section));
         services.AddSingleton<IPriceEventPublisher, KafkaPriceEventPublisher>();
+
+        services.AddStackExchangeRedisCache(options =>
+        {
+            options.Configuration = configuration.GetConnectionString("Redis");
+            options.InstanceName = "priceflow:";
+        });
+        services.AddScoped<IPriceCache, RedisPriceCache>();
 
         return services;
     }
