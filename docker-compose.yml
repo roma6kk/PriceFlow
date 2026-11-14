@@ -53,5 +53,49 @@ services:
       /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka:9092
       --create --if-not-exists --topic price-changed --partitions 3 --replication-factor 1
 
+  competitor:
+    build:
+      context: .
+      args:
+        PROJECT: PriceFlow.CompetitorService
+    ports:
+      - "5081:8080"
+
+  api:
+    build:
+      context: .
+      args:
+        PROJECT: PriceFlow.Api
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__Postgres: Host=postgres;Database=priceflow;Username=priceflow;Password=priceflow
+      ConnectionStrings__Redis: redis:6379
+      CompetitorService__Url: http://competitor:8080
+      Kafka__BootstrapServers: kafka:9092
+    ports:
+      - "5080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka-init:
+        condition: service_completed_successfully
+      redis:
+        condition: service_started
+      competitor:
+        condition: service_started
+
+  notifier:
+    build:
+      context: .
+      args:
+        PROJECT: PriceFlow.Notifier
+    environment:
+      Kafka__BootstrapServers: kafka:9092
+    ports:
+      - "5082:8080"
+    depends_on:
+      kafka-init:
+        condition: service_completed_successfully
+
 volumes:
   postgres-data:
