@@ -9,7 +9,8 @@ namespace PriceFlow.Notifier.Consumers;
 /// <summary>Reads price changes from Kafka and pushes them to SignalR clients.</summary>
 public class PriceChangedConsumer(
     IConfiguration configuration,
-    IHubContext<PricesHub, IPricesClient> hub) : BackgroundService
+    IHubContext<PricesHub, IPricesClient> hub,
+    ILogger<PriceChangedConsumer> logger) : BackgroundService
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -30,14 +31,25 @@ public class PriceChangedConsumer(
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                var result = consumer.Consume(stoppingToken);
-                var priceChange = JsonSerializer.Deserialize<PriceChangedEvent>(result.Message.Value);
-                if (priceChange is null)
-                    continue;
+                try
+                {
+                    var result = consumer.Consume(stoppingToken);
+                    var priceChange = JsonSerializer.Deserialize<PriceChangedEvent>(result.Message.Value);
+                    if (priceChange is null)
+                        continue;
 
-                await hub.Clients
-                    .Groups(PricesHub.AllGroup, PricesHub.SkuGroup(priceChange.Sku))
-                    .PriceChanged(priceChange);
+                    await hub.Clients
+                        .Groups(PricesHub.AllGroup, PricesHub.SkuGroup(priceChange.Sku))
+                        .PriceChanged(priceChange);
+                }
+                catch (ConsumeException ex)
+                {
+                    logger.LogWarning("Kafka consume error: {Reason}", ex.Error.Reason);
+                }
+                catch (JsonException ex)
+                {
+                    logger.LogWarning(ex, "Skipping a malformed message");
+                }
             }
         }
         catch (OperationCanceledException)
