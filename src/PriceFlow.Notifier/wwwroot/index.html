@@ -74,14 +74,14 @@
       status.className = online ? 'online' : '';
     };
 
+    // Group membership lives on the server and is lost on reconnect, so subscribe again.
+    const subscribe = () => connection.invoke('SubscribeAll').then(() => setStatus('online', true));
+
     connection.onreconnecting(() => setStatus('reconnecting…', false));
-    connection.onreconnected(() => setStatus('online', true));
+    connection.onreconnected(subscribe);
     connection.onclose(() => setStatus('offline', false));
 
-    connection.start()
-      .then(() => connection.invoke('SubscribeAll'))
-      .then(() => setStatus('online', true))
-      .catch(() => setStatus('offline', false));
+    connection.start().then(subscribe).catch(() => setStatus('offline', false));
   </script>
 </body>
 </html>
