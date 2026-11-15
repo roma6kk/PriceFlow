@@ -1,0 +1,34 @@
+@host = http://localhost:5080
+
+### All products
+GET {{host}}/api/products
+
+### Create a product
+POST {{host}}/api/products
+Content-Type: application/json
+
+{
+  "sku": "JAM-6006",
+  "name": "Strawberry jam, 300 g",
+  "cost": 190,
+  "minMarginPercent": 20
+}
+
+### Current price by SKU (cached in Redis)
+GET {{host}}/api/prices/TEA-1027
+
+### Change cost and minimal margin
+@productId = 00000000-0000-0000-0000-000000000000
+PUT {{host}}/api/products/{{productId}}/cost
+Content-Type: application/json
+
+{
+  "cost": 450,
+  "minMarginPercent": 15
+}
+
+### Reprice one product right now
+POST {{host}}/api/products/{{productId}}/reprice
+
+### Price history
+GET {{host}}/api/products/{{productId}}/price-history?take=20

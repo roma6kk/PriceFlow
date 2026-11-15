@@ -15,6 +15,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
+builder.Services.AddHealthChecks();
 
 builder.Services.Configure<RepricingOptions>(builder.Configuration.GetSection(RepricingOptions.Section));
 builder.Services.AddHostedService<RepricingWorker>();
@@ -28,5 +29,6 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 app.MapControllers();
+app.MapHealthChecks("/health");
 
 app.Run();
