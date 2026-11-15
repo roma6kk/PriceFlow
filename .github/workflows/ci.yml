@@ -34,3 +34,43 @@ jobs:
         with:
           name: test-results
           path: "**/results.trx"
+
+  # Builds the images on every run, pushes them to GHCR only from main.
+  docker:
+    name: Docker image (${{ matrix.name }})
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      matrix:
+        include:
+          - name: api
+            project: PriceFlow.Api
+          - name: competitor
+            project: PriceFlow.CompetitorService
+          - name: notifier
+            project: PriceFlow.Notifier
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        if: github.ref == 'refs/heads/main'
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          build-args: PROJECT=${{ matrix.project }}
+          push: ${{ github.ref == 'refs/heads/main' }}
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/priceflow-${{ matrix.name }}:latest
+            ghcr.io/${{ github.repository_owner }}/priceflow-${{ matrix.name }}:${{ github.sha }}
+          cache-from: type=gha,scope=${{ matrix.name }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.name }}
