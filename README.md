@@ -102,7 +102,7 @@ PostgreSQL is published on port `5434` so it does not clash with a local install
 
 Ready-made requests are in [PriceFlow.Api.http](src/PriceFlow.Api/PriceFlow.Api.http).
 
-Errors come back as problem details: `400` for validation, `404`, `409` for a duplicate SKU, `422` for a broken business rule.
+Errors come back as problem details: `400` for validation, `404`, `409` for a duplicate SKU or a concurrent update, `422` for a broken business rule.
 
 ## Development
 

@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using PriceFlow.Application.Common.Exceptions;
 using PriceFlow.Application.Common.Interfaces;
 using PriceFlow.Domain.Products;
 
@@ -12,5 +13,15 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     protected override void OnModelCreating(ModelBuilder modelBuilder) =>
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
 
-    Task IUnitOfWork.SaveChangesAsync(CancellationToken ct) => SaveChangesAsync(ct);
+    async Task IUnitOfWork.SaveChangesAsync(CancellationToken ct)
+    {
+        try
+        {
+            await SaveChangesAsync(ct);
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            throw new ConflictException("The product was changed by another request. Please retry.");
+        }
+    }
 }
