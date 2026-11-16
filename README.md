@@ -125,3 +125,14 @@ dotnet ef migrations add <Name> -p src/PriceFlow.Infrastructure -s src/PriceFlow
 ```
 
 CI runs on every push and pull request: formatting check, build, tests, then Docker images for all three services. From `main` the images are pushed to GitHub Container Registry.
+
+## Known limitations
+
+Things I left out to keep the project small, and what I would do about them:
+
+- **No transactional outbox.** The event is published after the database commit, so if Kafka is down at that moment the event is lost (the price itself is saved). An outbox table with a relay would fix it.
+- **Kafka delivery is at-least-once**, and the dashboard does not deduplicate. For a dashboard that is fine: showing the same price twice changes nothing.
+- **No authentication.** Changing costs should obviously not be public.
+- **One pricing rule.** A real system would have strategies per category, price corridors, promo periods.
+- **Migrations run on API startup.** Convenient for a demo, but with several instances it should be a separate step in the deploy pipeline.
+- **No integration tests.** Next step would be Testcontainers for PostgreSQL and Kafka.
