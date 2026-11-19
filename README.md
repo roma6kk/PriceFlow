@@ -32,9 +32,3 @@ Demo products are added on first start.
 ```bash
 dotnet test
 ```
-
-## TODO
-
-- outbox for Kafka events
-- integration tests with Testcontainers
-- auth
