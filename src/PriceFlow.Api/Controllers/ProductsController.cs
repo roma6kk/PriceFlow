@@ -36,7 +36,6 @@ public class ProductsController(ISender sender) : ControllerBase
         return NoContent();
     }
 
-    /// <summary>Asks the competitor service for a fresh price and reprices the product right now.</summary>
     [HttpPost("{id:guid}/reprice")]
     public Task<RepriceResult> Reprice(Guid id, CancellationToken ct) =>
         sender.Send(new RepriceProductCommand(id), ct);

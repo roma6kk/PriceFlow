@@ -20,8 +20,6 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
         builder.Property(p => p.Price).HasPrecision(18, 2);
         builder.Property(p => p.CompetitorPrice).HasPrecision(18, 2);
 
-        // Maps to the xmin system column: PostgreSQL bumps it on every row update,
-        // so EF Core gets optimistic concurrency without an extra column.
         builder.Property(p => p.Version).IsRowVersion();
     }
 }

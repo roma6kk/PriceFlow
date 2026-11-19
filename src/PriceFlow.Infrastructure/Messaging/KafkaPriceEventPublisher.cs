@@ -7,7 +7,6 @@ using PriceFlow.Contracts.Events;
 
 namespace PriceFlow.Infrastructure.Messaging;
 
-/// <summary>Registered as a singleton: a Kafka producer is thread-safe and expensive to create.</summary>
 public sealed class KafkaPriceEventPublisher : IPriceEventPublisher, IDisposable
 {
     private readonly IProducer<string, string> _producer;
@@ -29,7 +28,6 @@ public sealed class KafkaPriceEventPublisher : IPriceEventPublisher, IDisposable
         var message = new PriceChangedEvent(n.ProductId, n.Sku, n.Name, n.OldPrice, n.NewPrice,
             n.CompetitorPrice, n.Reason, n.ChangedAt);
 
-        // Product id as the key: all events of one product land in one partition and stay ordered.
         await _producer.ProduceAsync(KafkaTopics.PriceChanged, new Message<string, string>
         {
             Key = n.ProductId.ToString(),

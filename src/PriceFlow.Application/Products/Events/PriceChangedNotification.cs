@@ -3,7 +3,6 @@ using PriceFlow.Domain.Products;
 
 namespace PriceFlow.Application.Products.Events;
 
-/// <summary>In-process event: raised after a new price has been saved.</summary>
 public record PriceChangedNotification(
     Guid ProductId,
     string Sku,

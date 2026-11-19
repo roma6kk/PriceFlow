@@ -48,7 +48,6 @@ public class ProductTests
     {
         var product = Product.Create("TEA-1001", "Green tea", 100m, 20m, Now);
 
-        // The competitor is cheaper than our floor, so we stay at 120.
         var change = product.Reprice(competitorPrice: 110m, Now.AddMinutes(1));
 
         Assert.Null(change);

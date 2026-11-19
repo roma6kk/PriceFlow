@@ -35,7 +35,6 @@ jobs:
           name: test-results
           path: "**/results.trx"
 
-  # Builds the images on every run, pushes them to GHCR only from main.
   docker:
     name: Docker image (${{ matrix.name }})
     needs: build

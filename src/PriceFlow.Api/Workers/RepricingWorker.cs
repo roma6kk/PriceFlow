@@ -4,7 +4,6 @@ using PriceFlow.Application.Products.Commands.RepriceAllProducts;
 
 namespace PriceFlow.Api.Workers;
 
-/// <summary>Reprices the whole catalog on a timer.</summary>
 public class RepricingWorker(
     IServiceScopeFactory scopeFactory,
     IOptions<RepricingOptions> options,
@@ -18,8 +17,6 @@ public class RepricingWorker(
         {
             try
             {
-                // The worker is a singleton, but handlers need a scoped DbContext,
-                // so every run gets its own scope, just like an HTTP request does.
                 await using var scope = scopeFactory.CreateAsyncScope();
                 var sender = scope.ServiceProvider.GetRequiredService<ISender>();
 
@@ -29,7 +26,6 @@ public class RepricingWorker(
             }
             catch (Exception ex) when (ex is not OperationCanceledException)
             {
-                // E.g. the competitor service is down. Skip this run and try again on the next tick.
                 logger.LogError(ex, "Repricing run failed");
             }
         }

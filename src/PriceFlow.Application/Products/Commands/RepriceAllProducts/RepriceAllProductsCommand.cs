@@ -4,7 +4,6 @@ using PriceFlow.Application.Products.Events;
 
 namespace PriceFlow.Application.Products.Commands.RepriceAllProducts;
 
-/// <summary>Reprices the whole catalog. Returns the number of changed prices.</summary>
 public record RepriceAllProductsCommand : IRequest<int>;
 
 public class RepriceAllProductsCommandHandler(
@@ -23,7 +22,6 @@ public class RepriceAllProductsCommandHandler(
         var now = time.GetUtcNow().UtcDateTime;
         var notifications = new List<PriceChangedNotification>();
 
-        // Quotes arrive one by one over a gRPC server stream.
         await foreach (var quote in competitor.GetPricesAsync(bySku.Keys, ct))
         {
             if (!bySku.TryGetValue(quote.Sku, out var product))

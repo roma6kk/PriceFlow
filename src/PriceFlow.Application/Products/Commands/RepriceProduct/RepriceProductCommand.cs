@@ -32,7 +32,6 @@ public class RepriceProductCommandHandler(
 
         await unitOfWork.SaveChangesAsync(ct);
 
-        // Publish only after the commit, so nobody hears about a price that was rolled back.
         if (change is not null)
             await publisher.Publish(PriceChangedNotification.From(product, change), ct);
 

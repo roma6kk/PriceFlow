@@ -5,7 +5,6 @@ using PriceFlow.Domain.Products;
 
 namespace PriceFlow.Application.Products.Queries.GetCurrentPrice;
 
-/// <summary>The hot read path: a storefront asks for the current price by SKU.</summary>
 public record GetCurrentPriceQuery(string Sku) : IRequest<CurrentPriceDto>;
 
 public record CurrentPriceDto(string Sku, decimal Price);
@@ -17,7 +16,6 @@ public class GetCurrentPriceQueryHandler(IProductRepository products, IPriceCach
     {
         var sku = query.Sku.Trim().ToUpperInvariant();
 
-        // Cache-aside: try Redis first, fall back to the database and fill the cache.
         var cached = await cache.GetAsync(sku, ct);
         if (cached is not null)
             return new CurrentPriceDto(sku, cached.Value);

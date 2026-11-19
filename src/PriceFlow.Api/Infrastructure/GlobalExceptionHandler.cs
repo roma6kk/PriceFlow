@@ -6,7 +6,6 @@ using PriceFlow.Domain.Common;
 
 namespace PriceFlow.Api.Infrastructure;
 
-/// <summary>Turns application exceptions into RFC 7807 problem details.</summary>
 public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IExceptionHandler
 {
     public async ValueTask<bool> TryHandleAsync(HttpContext context, Exception exception, CancellationToken ct)

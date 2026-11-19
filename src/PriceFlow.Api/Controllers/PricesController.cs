@@ -8,7 +8,6 @@ namespace PriceFlow.Api.Controllers;
 [Route("api/prices")]
 public class PricesController(ISender sender) : ControllerBase
 {
-    /// <summary>Current price by SKU. Served from Redis when possible.</summary>
     [HttpGet("{sku}")]
     public Task<CurrentPriceDto> Get(string sku, CancellationToken ct) =>
         sender.Send(new GetCurrentPriceQuery(sku), ct);

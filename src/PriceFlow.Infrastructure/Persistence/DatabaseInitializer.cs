@@ -6,7 +6,6 @@ namespace PriceFlow.Infrastructure.Persistence;
 
 public static class DatabaseInitializer
 {
-    /// <summary>Applies pending migrations and, if asked, adds a few demo products to an empty catalog.</summary>
     public static async Task InitializeDatabaseAsync(this IServiceProvider services, bool seedDemoData)
     {
         using var scope = services.CreateScope();

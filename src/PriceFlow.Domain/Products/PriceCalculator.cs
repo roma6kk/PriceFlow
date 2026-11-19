@@ -1,9 +1,5 @@
 namespace PriceFlow.Domain.Products;
 
-/// <summary>
-/// Pricing rule: stay slightly cheaper than the competitor,
-/// but never sell below cost plus the minimal margin.
-/// </summary>
 public static class PriceCalculator
 {
     public const decimal UndercutPercent = 1m;
@@ -21,7 +17,6 @@ public static class PriceCalculator
         return Math.Max(target, floor);
     }
 
-    // Math.Round uses banker's rounding by default, which is not what you expect for money.
     private static decimal Round(decimal value) =>
         Math.Round(value, 2, MidpointRounding.AwayFromZero);
 }

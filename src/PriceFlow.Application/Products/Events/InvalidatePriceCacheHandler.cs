@@ -15,7 +15,6 @@ public class InvalidatePriceCacheHandler(IPriceCache cache, ILogger<InvalidatePr
         }
         catch (Exception ex)
         {
-            // The cache is best effort: a stale entry expires by TTL anyway.
             logger.LogWarning(ex, "Failed to invalidate price cache for {Sku}", notification.Sku);
         }
     }

@@ -15,8 +15,6 @@ public class PublishPriceChangedHandler(IPriceEventPublisher publisher, ILogger<
         }
         catch (Exception ex)
         {
-            // The price is already committed, so the event is lost here.
-            // A transactional outbox would fix that; left out to keep the project small.
             logger.LogError(ex, "Failed to publish price change for {Sku}", notification.Sku);
         }
     }

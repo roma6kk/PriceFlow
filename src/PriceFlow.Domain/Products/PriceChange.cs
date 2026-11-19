@@ -1,6 +1,5 @@
 namespace PriceFlow.Domain.Products;
 
-/// <summary>One row of price history.</summary>
 public class PriceChange
 {
     private PriceChange() { }

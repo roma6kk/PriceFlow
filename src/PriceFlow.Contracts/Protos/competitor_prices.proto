@@ -7,11 +7,8 @@ option csharp_namespace = "PriceFlow.Contracts.Grpc";
 import "google/protobuf/timestamp.proto";
 
 service CompetitorPrices {
-  // Price of a single product. Returns NOT_FOUND if the competitor does not sell it.
   rpc GetPrice (GetPriceRequest) returns (PriceReply);
 
-  // Prices for a batch of products, streamed back one by one.
-  // Products the competitor does not sell are skipped.
   rpc GetPrices (GetPricesRequest) returns (stream PriceReply);
 }
 
@@ -25,7 +22,6 @@ message GetPricesRequest {
 
 message PriceReply {
   string sku = 1;
-  // Money goes over the wire as integer kopecks: protobuf has no decimal type.
   int64 price_kopecks = 2;
   google.protobuf.Timestamp observed_at = 3;
 }

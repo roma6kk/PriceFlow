@@ -6,7 +6,6 @@ using PriceFlow.Notifier.Hubs;
 
 namespace PriceFlow.Notifier.Consumers;
 
-/// <summary>Reads price changes from Kafka and pushes them to SignalR clients.</summary>
 public class PriceChangedConsumer(
     IConfiguration configuration,
     IHubContext<PricesHub, IPricesClient> hub,
@@ -17,10 +16,7 @@ public class PriceChangedConsumer(
         var config = new ConsumerConfig
         {
             BootstrapServers = configuration["Kafka:BootstrapServers"],
-            // Every instance must see every event to push it to its own clients,
-            // so each instance gets its own consumer group.
             GroupId = $"notifier-{Environment.MachineName}",
-            // A dashboard only cares about fresh prices, no need to replay history.
             AutoOffsetReset = AutoOffsetReset.Latest
         };
 
@@ -54,7 +50,6 @@ public class PriceChangedConsumer(
         }
         catch (OperationCanceledException)
         {
-            // Normal shutdown.
         }
         finally
         {

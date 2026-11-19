@@ -3,7 +3,6 @@ using MediatR;
 
 namespace PriceFlow.Application.Common.Behaviors;
 
-/// <summary>Runs all FluentValidation validators of a request before its handler.</summary>
 public class ValidationBehavior<TRequest, TResponse>(IEnumerable<IValidator<TRequest>> validators)
     : IPipelineBehavior<TRequest, TResponse>
     where TRequest : notnull

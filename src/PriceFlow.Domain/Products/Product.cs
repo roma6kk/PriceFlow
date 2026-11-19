@@ -15,7 +15,6 @@ public class Product
     public decimal? CompetitorPrice { get; private set; }
     public DateTime UpdatedAt { get; private set; }
 
-    /// <summary>Optimistic concurrency token (mapped to PostgreSQL xmin).</summary>
     public uint Version { get; private set; }
 
     public static Product Create(string sku, string name, decimal cost, decimal minMarginPercent, DateTime now)
@@ -38,8 +37,6 @@ public class Product
         };
     }
 
-    /// <summary>Recalculates the price for a new competitor price.</summary>
-    /// <returns>History record, or null if the price stayed the same.</returns>
     public PriceChange? Reprice(decimal competitorPrice, DateTime now)
     {
         if (competitorPrice <= 0)

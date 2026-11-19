@@ -1,6 +1,3 @@
-# One Dockerfile for all three services: pass the project name as a build argument.
-#   docker build --build-arg PROJECT=PriceFlow.Api -t priceflow-api .
-
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG PROJECT
 WORKDIR /repo
@@ -15,7 +12,6 @@ WORKDIR /app
 COPY --from=build /app .
 
 ENV APP_DLL=${PROJECT}.dll
-# The base image ships a non-root user, no reason to run as root.
 USER $APP_UID
 EXPOSE 8080
 ENTRYPOINT ["sh", "-c", "exec dotnet $APP_DLL"]

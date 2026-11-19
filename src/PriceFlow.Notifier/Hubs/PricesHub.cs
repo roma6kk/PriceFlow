@@ -2,10 +2,6 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace PriceFlow.Notifier.Hubs;
 
-/// <summary>
-/// Clients pick what to listen to: the whole feed or single products.
-/// A client should use one of the two, otherwise it gets the same event twice.
-/// </summary>
 public class PricesHub : Hub<IPricesClient>
 {
     public const string AllGroup = "all";
