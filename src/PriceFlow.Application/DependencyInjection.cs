@@ -1,3 +1,4 @@
+using System.Globalization;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using PriceFlow.Application.Common.Behaviors;
@@ -17,6 +18,7 @@ public static class DependencyInjection
             cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
         });
         services.AddValidatorsFromAssembly(assembly);
+        ValidatorOptions.Global.LanguageManager.Culture = CultureInfo.InvariantCulture;
         services.AddSingleton(TimeProvider.System);
 
         return services;
